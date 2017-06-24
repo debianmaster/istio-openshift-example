@@ -31,9 +31,19 @@ oc new-app https://github.com/i63/store-frontend --name=store --strategy=source 
 oc env dc store inventory_svc=http://inventory:8000 products_svc=http://products:8080
 ```
 
+### Deploy Istio controller
+```sh
+oc new-app debianmaster/istio-controller
+```
+
+### Apply labels on apis/frontend to inject istio side car
+```sh
+oc label dc store     istio=true
+oc label dc products  istio=true
+oc label dc inventory istio=true
+```
 
 ## Cleanup
-`oc label dc store  version=v1 istio=true`  
 `oc delete all  -l app=products`  
 `oc delete all  -l app=store`  
 `oc delete all  -l app=inventory`  
