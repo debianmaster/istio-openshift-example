@@ -1,6 +1,11 @@
 # Work in Progress
 
 ## Deploy all
+### Deploy Stre frontend
+```sh
+oc new-app https://github.com/i63/store-frontend --name=store --strategy=source -l version=v1
+oc env dc store inventory_svc=http://inventory:8000 products_svc=http://products:8080
+```
 ### Deploy Products API
 ```sh
 oc new-app mongodb -l app=mongodb --name=productsdb \
@@ -25,11 +30,7 @@ mysql -h 127.0.0.1 -u root -p < /tmp/script.sql #inside container.
 oc new-app https://github.com/i63/store-inventory --name=inventory -l version=v1
 oc env dc inventory sql_db=store sql_host=mysql sql_user=root sql_password=password
 ```
-### Deploy Stre frontend
-```sh
-oc new-app https://github.com/i63/store-frontend --name=store --strategy=source -l version=v1
-oc env dc store inventory_svc=http://inventory:8000 products_svc=http://products:8080
-```
+
 
 ### Deploy Istio controller
 ```sh
