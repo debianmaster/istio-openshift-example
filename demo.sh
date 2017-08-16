@@ -56,6 +56,7 @@ runc 'oc rsh $MYSQL'
 backtotop
 desc 'deploy inventory service and connect database'
 runc 'oc new-app https://github.com/i63/store-inventory strategy=docker --name=inventory -l version=v1'
+runc 'oc logs -f inventory-1-build'
 runc 'oc env dc inventory sql_db=store sql_host=mysql sql_user=root sql_password=password'
 
 
