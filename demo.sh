@@ -1,30 +1,6 @@
 #!/bin/bash
 . $(dirname ${BASH_SOURCE})/util.sh
 
-backtotop
-desc 'Deploy Store Front End'
-runc 'oc new-app https://github.com/i63/store-frontend --name=store --strategy=source -l version=v1'
-
-
-backtotop
-desc 'Connect Store frontend with inventory and products api'
-runc 'oc env dc store inventory_svc=http://inventory:8000 products_svc=http://products:8080'
-
-backtotop
-desc 'Deploy products mongod database'
-runc 'oc new-app mongodb -l app=mongodb --name=productsdb \
-  -e MONGODB_ADMIN_PASSWORD=password  -e MONGODB_USER=app_user \
-  -e MONGODB_DATABASE=store  -e MONGODB_PASSWORD=password'
-
-backtotop
-desc 'Deploy products nodejs api'
-runc 'oc new-app https://github.com/i63/store-products --name=products -l version=v1'
-
-backtotop
-desc 'Connect products api with mongodb'
-runc "oc env dc products MONGO_USER=app_user MONGO_PASSWORD=password \
- MONGO_SERVER=productsdb MONGO_PORT=27017 MONGO_DB=store \
- mongo_url='mongodb://app_user:password@productsdb/store'"
 
 backtotop
 desc 'Deploy Mysql database for catalog data'
@@ -32,7 +8,36 @@ runc 'oc new-app mysql -e MYSQL_ROOT_PASSWORD=password'
 
 backtotop
 desc 'Lets see if mysql is ready'
-runc 'oc get pods -w'
+runc 'oc get pods'
+runc 'kubectl get pods'
+
+
+backtotop
+desc 'Deploy Store Front End'
+runc 'oc new-app https://github.com/debianmaster/store-frontend --name=store --strategy=source -l version=v1'
+
+
+backtotop
+desc 'Connect Store frontend with inventory and products api'
+runc 'oc env dc store inventory_svc=http://inventory:8000 products_svc=http://products:8080'
+
+
+backtotop
+desc 'Deploy products mongod database'
+runc 'oc new-app mongodb -l app=mongodb --name=productsdb \
+  -e MONGODB_ADMIN_PASSWORD=password  -e MONGODB_USER=app_user \
+  -e MONGODB_DATABASE=store  -e MONGODB_PASSWORD=password'
+  
+backtotop
+desc 'Deploy products nodejs api'
+runc 'oc new-app https://github.com/debianmaster/store-products.git --name=products -l version=v1'
+
+backtotop
+desc 'Connect products api with mongodb'
+runc "oc env dc products MONGO_USER=app_user MONGO_PASSWORD=password \
+ MONGO_SERVER=productsdb MONGO_PORT=27017 MONGO_DB=store \
+ mongo_url='mongodb://app_user:password@productsdb/store'"
+
 
 backtotop
 desc 'Get mysql container name'
